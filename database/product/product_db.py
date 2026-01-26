@@ -41,18 +41,6 @@ def delete_product(product_id):
     cursor = conn.cursor()
 
     cursor.execute("""
-                   SELECT COUNT(*)
-                   FROM ProductTransaction
-                   WHERE ID_Product = ?
-                   """, (product_id,))
-
-    count = cursor.fetchone()[0]
-
-    if count > 0:
-        conn.close()
-        raise Exception("Produto possui movimentações e não pode ser removido.")
-
-    cursor.execute("""
                    DELETE
                    FROM Product
                    WHERE ID_Product = ?

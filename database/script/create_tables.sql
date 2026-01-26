@@ -90,3 +90,20 @@ BEGIN
                 RAISE(ABORT, 'Estoque insuficiente para realizar a saída.')
         END;
 END;
+
+CREATE TRIGGER IF NOT EXISTS trg_prevent_delete_product_with_transactions
+BEFORE DELETE ON Product
+FOR EACH ROW
+BEGIN
+    SELECT
+        CASE
+            WHEN (
+                COALESCE((
+                        SELECT COUNT(*)
+                        FROM ProductTransaction
+                        WHERE ID_Product = OLD.ID_Product
+                ), 0) > 0
+            ) THEN
+                RAISE(ABORT, 'Este produto contém movimentações por tanto não é possível excluir.')
+        END;
+END;
